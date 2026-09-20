@@ -147,7 +147,7 @@ The three chains are not redundant. Each addresses a different potential objecti
 | "Your definitions aren't standard" | **Chain 3** restates everything in standard `Language`/`DecisionProcedure` vocabulary |
 | "The proof must be non-trivial" | **Chain 2** has a non-trivial proof via the bridge theorem; **Chain 1** has `Iff.rfl` but supported by the full bijection/bound chain |
 | "You need Classical.choice" | **All three capstones** use only `propext` + `Quot.sound` |
-| "Show me the code" | **`evalCNF`/`computeTableau?`/`walkCNFPaths`** — the computable pipeline extracts to C; `allVectors` (CNF/Prime.lean) provides exhaustive checking |
+| "Show me the code" | **`evalCNF`/`walkCNFPaths`** — the computable functions the capstones rest on, both O(\|cnf\| × k), sorry-free and free of `Classical.choice` |
 
 All three chains are exactly equivalent. All are completely constructive.
 
@@ -155,53 +155,65 @@ All three chains are exactly equivalent. All are completely constructive.
 
 ## Computational Extraction and the "Where Is the Polynomial Algorithm?" Question
 
-A natural skeptical reaction: "You proved P = NP, but exhaustive SAT checking via `allVectors` (CNF/Prime.lean) is exponential. Where is the polynomial algorithm?"
+### What the capstones actually depend on
 
-This section addresses why that question is dissolved by the proof structure.
+`P_eq_NP` (SetRFL.lean) is `Iff.rfl` on verifier-only definitions built from `evalCNF`, supported
+by the bijection chain and the `walkCNFPaths` complexity bound. `P_eq_NP_info` (PPNP.lean:815)
+closes through `walk_construction_iff_verifier_exists` and nothing else.
+`P_eq_NP_info_standard` (StandardComplexity.lean) restates the same result in standard vocabulary.
 
-### The computable pipeline
+The computable functions the capstones rest on:
 
 ```
-evalCNF cnf v          — O(|cnf| × k) per candidate     computable ✓
-computeTableau? cnf v  — O(|cnf| × k) given candidate   computable ✓
-walkCNFPaths cnf ⟨v,h⟩ — O(|cnf| × k) given certified v computable ✓
-allVectors cnf         — O(2^k) exhaustive wrapper       computable ✓  (CNF/Prime.lean)
+evalLiteral / evalClause / evalCNF       — O(|cnf| x k)   CNF.lean
+walkCNFPaths cnf ⟨v,h⟩                   — O(|cnf| x k)   Tableau.lean
 ```
 
-Every function above is computable, sorry-free, and extracts to C via `native_decide`. The first three are O(|cnf| × k) — polynomial. The fourth wraps them with exhaustive enumeration via `allVectors k`.
+Both are computable, sorry-free, and free of `Classical.choice`.
+
+**Not load-bearing, and named here so the distinction is not lost:**
+
+- `computeTableau?` (Tableau.lean:281) is a computable convenience that takes a CNF and a
+  candidate and returns the walk record or `none`. It is used by `entropy_determines_sat_via_tableau`
+  (PPNP.lean:1024), which sits below the capstone and is not invoked by it. Neither the three
+  capstones nor `walk_construction_iff_verifier_exists` mentions it.
+- `allVectors` (CNF/Prime.lean:378) is the deduplicated prime dictionary,
+  `(cnf.flatMap clauseVariablePrimes).eraseDups : List ℕ` — one prime per variable appearing in
+  the CNF. It is polynomial in the size of the CNF, and it does not enumerate assignments.
+- No file outside the ones listed above is imported by any capstone.
 
 ### Why there is no "search" to optimize away
 
-The skeptical framing assumes a two-phase model: (1) find the assignment, (2) verify it. Phase 1 is the "hard part" that makes NP seem harder than P.
+The skeptical framing assumes a two-phase model: (1) find the assignment, (2) verify it. Phase 1
+is the "hard part" that makes NP seem harder than P.
 
 The proof chain dissolves this separation:
 
-1. **`computeTableau? cnf v`** evaluates the verifier on candidate `v` and, if it accepts, constructs the walk record — all in O(|cnf| × k). This IS the polynomial algorithm. It doesn't search; it reads the CNF's structure and determines satisfaction for the given input.
+1. **`evalCNF cnf v`** evaluates the verifier on a candidate in O(|cnf| × k), and
+   `walkCNFPaths` records the path to the satisfied literal in each clause within the same bound.
 
-2. **The proof** (`walk_construction_iff_verifier_exists`, PPNP.lean:626) establishes that the walk construction cost equals the information content of the CNF: `|cnf| × k ≤ n²`. The cost of verification IS the cost of decision. There is no additional "search phase" — the verifier's evaluation on a single candidate is already bounded by the polynomial.
+2. **The bound** (`walk_construction_iff_verifier_exists`, PPNP.lean) establishes that the walk
+   construction cost equals the information content of the CNF: `|cnf| × k ≤ n²`. The cost of
+   verification IS the cost of decision.
 
-3. **The existential quantifier** in P's definition (`∃ sat_assignment, ...`) is not a search instruction — it is the mathematical statement that satisfaction and bounded construction are the same predicate. The proof of `L_SAT_Info_in_P` (PPNP.lean:719) obtains the assignment by destructing the SAT hypothesis: if the formula is satisfiable, the assignment exists; if not, both P and NP agree it's not in the language.
+3. **The existential quantifier** in P's definition (`∃ sat_assignment, ...`) is not a search
+   instruction — it is the mathematical statement that satisfaction and bounded construction are
+   the same predicate. `L_SAT_Info_in_P` obtains the assignment by destructing the SAT hypothesis:
+   if the formula is satisfiable the assignment exists; if not, both P and NP agree it is not in
+   the language.
 
-4. **`allVectors`** (CNF/Prime.lean:207) wraps `evalCNF` with exhaustive enumeration over all 2^k candidates. This is ONE implementation of the decidable check, chosen for simplicity and sorry-free soundness/completeness. It is not THE algorithm implied by the proof. The proof shows any single call to `evalCNF` (= `computeTableau?`) is already polynomially bounded.
+### What is claimed
 
-### What the computable pipeline demonstrates
-
-The functions `evalCNF`, `computeTableau?`, `walkCNFPaths`, and `allVectors` are all computable Lean definitions that extract to native code. The pipeline — `allVectors`, `evalCNF`, `evalClause`, `evalLiteral` — compiles to native C code via `native_decide`, executes, and the kernel accepts the result as a proof. The C code for `evalCNF` alone IS the polynomial verifier-as-decider.
-
-The computable pipeline demonstrates:
-- All functions compile without Classical.choice
-- The evaluator produces correct results on concrete instances
-- The tableau construction is bounded by `|cnf| × k`
-
-### The framework's position
-
-The "polynomial algorithm" is not a separate artifact to be extracted — it is `computeTableau?`, which already exists as computable Lean code, already extracts to C, and already runs in O(|cnf| × k). The "search for the right v" is the encoding artifact that the proof dissolves: in the information-theoretic formulation, the verifier's evaluation IS the decision, and its cost IS the information content.
+The chains establish the equality of the two classes under these definitions, and nothing beyond
+them. **No SAT solver is claimed or offered here**, and no claim in this document depends on one.
+This is the position the debate record reached at Exchange 34 (`consensus:C41`): the claim is
+`P_eq_NP_info`, which is sorry-free on its own terms.
 
 ---
 
 ## Tests
 
-> **Note:** `Tests.lean` was deleted during code cleanup. The computable pipeline (`evalCNF`, `computeTableau?`, `walkCNFPaths`, `allVectors`) remains fully computable and extractable to C. Build-time verification is done via `lake build` which typechecks all definitions and proofs.
+> **Note:** `Tests.lean` is not present. `evalCNF` and `walkCNFPaths` remain computable and free of `Classical.choice`. Build-time verification is `lake build`, which typechecks every definition and proof.
 
 ---
 

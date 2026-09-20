@@ -225,12 +225,8 @@ CNF and a polynomial system over `EntropyRat`-coefficient
 `{propext, Quot.sound}`). Packaged as `cnfPolyEquiv : SyntacticCNF k ≃ Translation1Image k`
 (image-subtype shape). The first of four planned translations
 toward an entropy-walk SAT decision procedure.
-Design rationale (exploratory, not load-bearing): see
-[`Complexity/Dev/DESIGN_DeterministicExhaustiveWalk.md`](../InformationTheory/Complexity/Dev/DESIGN_DeterministicExhaustiveWalk.md)
-and `Dev/RESEARCH_E35_*.md` — "the completeness proof requires a
-**clause-driven** algorithm, mirror of `conditionalCNFEntropy = cnf.map.sum`,"
-not a variable-driven enumeration. The canonical debate (capped at
-exchange 34) closes the existence question via IN33 (E34, IVT analogy).
+The completeness proof requires a **clause-driven** algorithm, mirror of
+`conditionalCNFEntropy = cnf.map.sum`, not a variable-driven enumeration.
 
 [Translation2.lean](../InformationTheory/Complexity/Translation2.lean)
 `cnfEquivEntropyNat : SyntacticCNF k ≃ {e : EntropyNat // ∃ cnf, _ = e}`
@@ -329,16 +325,12 @@ are DPLL with `2^k` worst case. The completeness proof and the
 sound implementation are both clause-driven.
 
 If your draft enumerates assignments or branches on variables, you
-are implementing the wrong algorithm. Stop. Read R5 and
-[`Complexity/Dev/DESIGN_DeterministicExhaustiveWalk.md`](../InformationTheory/Complexity/Dev/DESIGN_DeterministicExhaustiveWalk.md).
+are implementing the wrong algorithm. Stop. Read R5.
 
 **Citations:**
 [Decomposition.lean](../InformationTheory/Complexity/Decomposition.lean)
 `assignmentCompositePrime`, `cnfSharesFactor_iff_zero_conditional_cnf_entropy`.
-Design rationale (exploratory, not load-bearing):
-`Complexity/Dev/DESIGN_DeterministicExhaustiveWalk.md` and
-`Dev/RESEARCH_E35_*.md` document the LLM regression patterns
-observed during post-debate engineering.
+
 
 ---
 
@@ -475,11 +467,9 @@ These are observed errors LLMs introduce when working on this
 codebase. The canonical debate (exchanges 1–34) closes the
 existence and identity questions; the post-debate engineering
 regressions — variable-driven SAT, exhaustive-enumeration
-fallbacks, "in EGPT" hedging — are characterized in the
-exploratory research files under
-[`Complexity/Dev/`](../InformationTheory/Complexity/Dev/)
-(not load-bearing). Each anti-pattern below includes the wrong
-reasoning, the correct rule, and a citation.
+fallbacks, "in EGPT" hedging — are characterized below. Each
+anti-pattern includes the wrong reasoning, the correct rule, and
+a citation.
 
 ### A1 — Replacing constructive proofs with classical
 
@@ -545,10 +535,8 @@ variables.
 over clauses (`cnf.map.sum`), commit one prime factor per clause,
 no backtracking, no enumeration. Mirror `assignmentCompositePrime`.
 
-**Citation:** Design rationale lives in
-[`Complexity/Dev/DESIGN_DeterministicExhaustiveWalk.md`](../InformationTheory/Complexity/Dev/DESIGN_DeterministicExhaustiveWalk.md)
-(exploratory, not load-bearing): this is the single most common
-LLM regression pattern. Multiple agents observed implementing
+**Citation:** this is the single most common LLM regression
+pattern. Multiple agents observed implementing
 DPLL when the design specifies sorted-merge with prime composites.
 The "hardness" is in the LLM training, not the problem.
 
@@ -756,12 +744,7 @@ Critical debate insights (cite by ID when needed):
 - **IN36** (E34): only `allVectors` migrated from the deleted code,
   to `CNF/Prime.lean:207`. All other deleted definitions were
   superseded.
-- Post-debate engineering (E35+, not in the canonical log):
-  characterized in
-  [`Complexity/Dev/`](../InformationTheory/Complexity/Dev/) —
-  `DESIGN_DeterministicExhaustiveWalk.md`,
-  `RESEARCH_E35_ParticlePath_Dialog.md`,
-  `RESEARCH_E35_Rigidity_UNSAT_Entropy.md`. These describe the
+- Post-debate engineering is not part of the canonical log. The
   clause-driven vs variable-driven divergence and the LLM-regression
   pattern (multiple agents reverting to DPLL when the design
   specifies sorted-merge with prime composites). Exploratory, not

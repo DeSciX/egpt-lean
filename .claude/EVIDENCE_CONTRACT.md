@@ -61,6 +61,6 @@ Axiom closure: {propext, Quot.sound} on the capstones; {propext, Classical.choic
 ### Verification commands
 
 - `lake build` (repo https://github.com/DeSciX/egpt-lean, cwd `Lean/EGPT`) — The Lean 4 proof chain typechecks sorry-free (~2 min).
-- `npx -y -p @descix/egpt-math-sdk@0.3.0 egpt-math-bench --quiet` — Exit 0, ending "EGPT-MATH BENCH: 157 canonical assertions | 157 runnable | 157/157 pass | 0 structurally-gapped (pinned) → RESULT: PASS", preceded by the "wasm sha256 …" provenance line and the "… WASM calls …" counter line — the integer-only (IOP, not FLOP) EGPT math, compiled Rust→WASM; a corrupted WASM exits 1 (no JS fallback ships).
+- `npx -y -p @descix/egpt-math-sdk@0.3.1 egpt-math-bench --quiet` — Exit 0, ending "EGPT-MATH BENCH: 157 canonical assertions | 157 runnable | 157/157 pass | 0 structurally-gapped (pinned) → RESULT: PASS", preceded by the "wasm sha256 …" provenance line and the "… WASM calls …" counter line — the integer-only (IOP, not FLOP) EGPT math, compiled Rust→WASM; a corrupted WASM exits 1 (no JS fallback ships).
 - `#print axioms InformationTheory.P_eq_NP   (and .P_eq_NP_info, .P_eq_NP_info_standard)` (repo https://github.com/DeSciX/egpt-lean, cwd `Lean/EGPT`) — Axiom closure is {propext, Quot.sound} on all three capstones — no Classical.choice, no sorryAx, no custom axioms.
 <!-- DESCIX-EVIDENCE-CONTRACT:END v2 -->

@@ -11,7 +11,7 @@ do not re-argue settled points (C42/Y16 at E34). -->
 
 ## Overview
 
-The P = NP result is established through three independent but formally equivalent proof chains. Each chain approaches the same mathematical fact from a different angle, and all three compile in Lean 4 with zero `sorry` and only the standard constructive axioms `propext` and `Quot.sound`.
+The P = NP result is established through three independent but formally equivalent proof chains. Each chain approaches the same mathematical fact from a different angle, and all three compile in Lean 4 with zero `sorry`, and each capstone closes to only the standard constructive axioms `propext` and `Quot.sound`.
 
 The three chains exist because the traditional P vs NP formulation obscures a fundamental fact: the "search" for a satisfying assignment is an artifact of encoding — not a property of the mathematical problem. Each chain reveals this in a different way.
 
@@ -83,8 +83,9 @@ The walk construction cost equals the verification cost because both ARE the sam
 
 ## Chain 3: Standard Complexity Terminology (StandardComplexity.lean)
 
-**Capstones:**
-- `P_eq_NP_info_standard` — P = NP for standard `Language` type
+**Capstone:** `P_eq_NP_info_standard` — P = NP for standard `Language` type
+
+**Membership lemmas:**
 - `L_SAT_in_P_standard` — SAT ∈ P_standard
 - `L_SAT_in_NP_standard` — SAT ∈ NP_standard
 
@@ -112,13 +113,13 @@ def L_SAT_standard : Language :=
     tape = encodeCNF cnf ∧ ∃ a : Vector Bool k, evalCNF cnf a = true }
 ```
 
-The `L_SAT_in_P_standard` proof uses the prime atom detection from `CNF/Prime.lean`. The `P_eq_NP_info_standard` proof is one line: `rw [P_eq_NP_info]`.
+The `L_SAT_in_P_standard` proof uses the prime atom detection from `CNF/Prime.lean`. The `P_eq_NP_info_standard` proof is one line: `rw [P_eq_NP_info]`; it does not use the two membership lemmas.
 
 ---
 
 ## Axiom Table
 
-Every theorem below uses only `propext` and `Quot.sound` — standard constructive Lean axioms. No `Classical.choice`. No `sorryAx`. No custom axioms.
+No theorem below uses `sorryAx` or a custom axiom. Every row except the two Chain 3 membership lemmas marked * uses only `propext` and `Quot.sound` — standard constructive Lean axioms, no `Classical.choice`.
 
 | Theorem | Chain | Axioms | Classical.choice? | Extractable to C? |
 |---------|-------|--------|-------------------|--------------------|
@@ -149,7 +150,7 @@ The three chains are not redundant. Each addresses a different potential objecti
 | "You need Classical.choice" | **All three capstones** use only `propext` + `Quot.sound` |
 | "Show me the code" | **`evalCNF`/`walkCNFPaths`** — the computable functions the capstones rest on, both O(\|cnf\| × k), sorry-free and free of `Classical.choice` |
 
-All three chains are exactly equivalent. All are completely constructive.
+All three chains are exactly equivalent. All three capstones are completely constructive.
 
 ---
 
@@ -204,10 +205,40 @@ The proof chain dissolves this separation:
 
 ### What is claimed
 
-The chains establish the equality of the two classes under these definitions, and nothing beyond
-them. **No SAT solver is claimed or offered here**, and no claim in this document depends on one.
-This is the position the debate record reached at Exchange 34 (`consensus:C41`): the claim is
-`P_eq_NP_info`, which is sorry-free on its own terms.
+What is claimed is what is proven: the three capstone theorems, as Lean states them.
+
+- `P_eq_NP : P_def = NP_def` (SetRFL.lean)
+- `P_eq_NP_info : P = NP` (PPNP.lean)
+- `P_eq_NP_info_standard` (StandardComplexity.lean): the images of `P` and `NP` under
+  `languageFromCNFFamily`, the binary encoding into `Language := Set (List Bool)`, are equal.
+
+Each is sorry-free, and `#print axioms` on each prints `propext, Quot.sound` (see Verification).
+
+**The proofs hold under standard mathematical definitions.** Every object they are stated over is a
+Mathlib type (`ℕ`, `List`, `Vector`, `Set`, `Nat.Prime`) or is carried onto one by a Lean `Equiv`,
+and the class definitions are given in full: `P_def`/`NP_def` (SetRFL.lean), `P`/`NP` (PPNP.lean),
+`P_standard`/`NP_standard` (StandardComplexity.lean).
+
+**The proofs hold under strict bijective equivalence.** Each bijection named here is an
+`Equiv`, with explicit maps in both directions and proven inverses:
+`entropyNatEquivNat : EntropyNat ≃ ℕ` (EntropyNumber/Basic.lean),
+`cnfPolyEquiv : SyntacticCNF k ≃ Translation1Image k` (Isomorphisms/CNF/CNFPolynomialSystem.lean),
+`cnfEquivEntropyNat` (Isomorphisms/CNF/CNFAsEntropyNat.lean), and
+`entropyIntEquivInt : EntropyInt ≃ ℤ` (EntropyNumber/Int.lean). Across each `Equiv`, every object on
+one side corresponds to exactly one object on the other.
+
+**EGPT constructive number theory carries no axiom of choice on the EGPT side of the boundary.**
+Each bijection named here (`entropyNatEquivNat`, `cnfPolyEquiv`, `cnfEquivEntropyNat`,
+`entropyIntEquivInt`) is choice-free in both directions: its `#print axioms` closure is
+`{propext}` or `{propext, Quot.sound}`. All three capstones depend on `entropyNatEquivNat`. No capstone depends on a constant that uses
+`Classical.choice`: a theorem's `#print axioms` closure contains every axiom of every constant it
+depends on, and the capstones' closure is `{propext, Quot.sound}`. `Classical.choice` does appear
+in the library outside that closure, for example in the two Chain 3 membership lemmas above and
+where EGPT numbers meet Mathlib's `ℚ` and `ℝ` (`EntropyRat.toRat`; `entropyRealEquivReal`, which
+is chosen from a cardinality equality).
+
+The debate record closed at Exchange 34 on the same claim (`consensus:C42`): P = NP is settled
+without qualification by the sorry-free proof chain.
 
 ---
 

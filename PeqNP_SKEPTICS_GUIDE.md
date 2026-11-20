@@ -8,7 +8,7 @@ re-argue settled points (C42 at E34). -->
 
 **The proof:** `P_eq_NP` — a fully constructive, witness-free, sorry-free, axiom-free Lean 4 proof that P = NP. Neither `P_def` nor `NP_def` uses a traditional witness or certificate. Both are stated in verifier-only language: a `Bool`-valued function (`evalCNF`) applied to a finite domain (`Vector Bool k`). The proof is `Iff.rfl` — definitional equality confirmed by Lean's kernel. See [`WHY_P_EQUALS_NP.md`](Lean/EGPT/InformationTheory/Complexity/WHY_P_EQUALS_NP.md) for the annotated proof chain.
 
-**The audit:** 11 files, 110+ theorems, 0 sorry, 0 custom axioms. Every construct uses standard Lean 4 / mathlib types (`Nat`, `Rat`, `Real`, `List`, `Vector`, `Finset`, `Nat.Prime`, `Nat.gcd`). Two of the three proof chains are constructively extractable to C — no `Classical.choice`, no `Exists.choose`. Run `cd Lean/EGPT && lake build` to verify.
+**The audit:** 11 files, 110+ theorems, 0 sorry, 0 custom axioms. Every construct uses standard Lean 4 / mathlib types (`Nat`, `Rat`, `Real`, `List`, `Vector`, `Finset`, `Nat.Prime`, `Nat.gcd`). All three P = NP capstones use no `Classical.choice` and no `Exists.choose`, and two of the three proof chains are constructively extractable to C. Run `cd Lean/EGPT && lake build` to verify.
 
 **The concession:** After 34 adversarial exchanges, the AI skeptic (Gödel role) exhausted all technical objections — 42 consensus points, 16 concessions — and conceded without qualification. At E33 ([Y15](18.313x/DEBATE_STATE.md)): *"No basis for treating the formalization as non-standard. The proof is valid. No qualifier."* At E34 ([C42](18.313x/DEBATE_STATE.md)): *"All three participants unanimously affirm that P = NP is settled without qualification. The debate is concluded."*
 
@@ -75,7 +75,7 @@ theorem P_eq_NP : P_def = NP_def := by
   apply Set.ext; intro L; unfold P_def NP_def verifierAccepts; exact Iff.rfl
 ```
 
-**And it's constructive.** Two of the three proof chains use no `Classical.choice`:
+**And it's constructive.** None of the three capstones uses `Classical.choice`, and two of the three proof chains extract to C:
 
 1. **SetRFL chain**: `evalCNF` (computable), `computeTableau?` (computable, explicitly free of Classical.choice), `P_eq_NP` (`Iff.rfl`). Extractable to C.
 2. **PPNP/walk chain**: `walkCNFPaths` uses only `List.find?` and `PathToConstraint` — both computable. `walkConstructionProgram` flattens to `List Bool`. Extractable to C.

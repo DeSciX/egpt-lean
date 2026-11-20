@@ -1,6 +1,6 @@
 ## Summary
 
-This PR creates the `Mathlib.InformationTheory` subtree: a ~13,000-line, 31-file formalization of entropy axiomatics (Rota's 7 axioms with a machine-verified uniqueness proof), an information-theoretic number hierarchy (`EntropyNat ≃ ℕ`, `EntropyInt ≃ ℤ`, `EntropyRat ≃ ℚ`, `EntropyReal ≃ ℝ`), three independent constructive proofs that P = NP, and a physics bridge proving that Bose-Einstein, Fermi-Dirac, and Maxwell-Boltzmann entropies all equal `C * Shannon`. All proof chains are `sorry`-free. Two of the three P = NP chains avoid `Classical.choice` entirely.
+This PR creates the `Mathlib.InformationTheory` subtree: a ~13,000-line, 31-file formalization of entropy axiomatics (Rota's 7 axioms with a machine-verified uniqueness proof), an information-theoretic number hierarchy (`EntropyNat ≃ ℕ`, `EntropyInt ≃ ℤ`, `EntropyRat ≃ ℚ`, `EntropyReal ≃ ℝ`), three independent constructive proofs that P = NP, and a physics bridge proving that Bose-Einstein, Fermi-Dirac, and Maxwell-Boltzmann entropies all equal `C * Shannon`. All proof chains are `sorry`-free. The capstones of all three P = NP chains avoid `Classical.choice` entirely.
 
 ## Module Breakdown
 
@@ -47,7 +47,7 @@ All three chains are `sorry`-free and machine-checked. Verification: `cd Lean/EG
 - **Capstone theorem:** `InformationTheory.P_eq_NP_info`
 - **File:** `InformationTheory/Complexity/PPNP.lean`
 - **Axiom inventory:** `propext`, `Quot.sound` -- NO `sorryAx`, NO `Classical.choice`
-- **What it proves:** P = NP via information extraction. The information content of a CNF formula (defined as `|cnf| * k`) bounds the cost to solve it. A clause-by-clause walk extracts complete information in `O(n^2)` steps, making SAT decidable in polynomial time. The walk record is simultaneously the certificate, the decision procedure, and the entropy extraction. RECT (program complexity = information content) closes the loop.
+- **What it proves:** P = NP via information extraction. The information content of a CNF formula (defined as `|cnf| * k`) bounds the cost to decide it. A clause-by-clause walk extracts complete information in `O(n^2)` steps, making SAT decidable in polynomial time. The walk record is simultaneously the certificate, the decision procedure, and the entropy extraction. RECT (program complexity = information content) closes the loop.
 
 ### Chain 2: Definitional Identity (`P_eq_NP`)
 
@@ -60,15 +60,17 @@ All three chains are `sorry`-free and machine-checked. Verification: `cd Lean/EG
 
 - **Capstone theorem:** `InformationTheory.P_eq_NP_info_standard`
 - **File:** `InformationTheory/Complexity/StandardComplexity.lean`
-- **Axiom inventory:** `propext`, `Quot.sound`, `Classical.choice`
+- **Axiom inventory:** `propext`, `Quot.sound` -- NO `sorryAx`, NO `Classical.choice` (the membership lemmas `L_SAT_in_P_standard` and `L_SAT_in_NP_standard` use `Classical.choice`; the capstone does not depend on them)
 - **What it proves:** P = NP restated using standard complexity definitions (`Language := Set (List Bool)`, traditional `P_standard`/`NP_standard` with polynomial-time decision procedures and polynomial certificate bounds). Maps the information-theoretic result (Chain 1) to the standard notation via formal equivalence, for readers more comfortable with the traditional framework.
 
-### Why Two Chains Avoid `Classical.choice`
+### Why the Capstones Avoid `Classical.choice`
 
-Lean 4 has three built-in axioms: `propext`, `Quot.sound`, and `Classical.choice`. Chains 1 and 2 use only the first two by:
+Lean 4 has three built-in axioms: `propext`, `Quot.sound`, and `Classical.choice`. The capstones of all three chains use only the first two. Chains 1 and 2 do so by:
 - Replacing nonconstructive tactics (e.g. `linarith`) with constructive ones (`omega`)
 - Using structural list properties (`.length`) instead of well-founded recursion
 - Proving all bounds explicitly in `calc` chains
+
+Chain 3's capstone is `rw [P_eq_NP_info]` and inherits Chain 1's closure.
 
 A choice-free proof is *constructive* -- it does not just prove a solution exists, it provides an algorithm to find it. The decision procedure `computeTableau` in `Tableau.lean` is fully computable and can be extracted to executable code via Lean's code generator.
 
@@ -93,7 +95,7 @@ lake env lean /tmp/check2.lean
 echo 'import InformationTheory.Complexity.StandardComplexity
 #print axioms InformationTheory.P_eq_NP_info_standard' > /tmp/check3.lean
 lake env lean /tmp/check3.lean
-# Expected output: 'propext', 'Quot.sound', 'Classical.choice' — no sorryAx
+# Expected output: 'propext' and 'Quot.sound' — no sorryAx, no Classical.choice
 ```
 
 ## Comparison (Scale and Novelty)

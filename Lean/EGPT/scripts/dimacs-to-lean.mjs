@@ -3,12 +3,12 @@
  * dimacs-to-lean.mjs — Convert DIMACS CNF to Lean 4 SyntacticCNF definitions.
  *
  * Usage:
- *   node dimacs-to-lean.mjs <file.cnf> [--name <id>] [--solve] [--assignment <file>]
+ *   node dimacs-to-lean.mjs <file.cnf> [--name <id>] [--assignment <file>] [--chunk <n>]
  *
  * Options:
  *   --name <id>       Lean identifier (default: derived from filename)
- *   --solve           Run minisat to find a satisfying assignment
- *   --assignment <f>  Read assignment from minisat output file
+ *   --assignment <f>  Read an assignment file (line 1 `SAT`, line 2 the signed
+ *                     literals) and verify it against the CNF
  *   --chunk <n>       Clauses per chunk (default: 100). Large CNFs are
  *                     split into chunks and concatenated to avoid Lean's
  *                     maxRecDepth limit on deeply nested List.cons.
@@ -17,28 +17,26 @@
  */
 
 import { readFileSync } from "node:fs";
-import { execSync } from "node:child_process";
 import { basename } from "node:path";
 
 // --- CLI -----------------------------------------------------------------
 
 const args = process.argv.slice(2);
 if (!args.length || args[0] === "--help") {
-  console.error("Usage: node dimacs-to-lean.mjs <file.cnf> [--name id] [--solve] [--assignment file] [--chunk n]");
+  console.error("Usage: node dimacs-to-lean.mjs <file.cnf> [--name id] [--assignment file] [--chunk n]");
   process.exit(1);
 }
 
 const cnfPath = args[0];
 let name = basename(cnfPath, ".cnf").replace(/[^a-zA-Z0-9]/g, "_");
-let solvePath = null;
-let doSolve = false;
+let assignmentPath = null;
 let chunkSize = 100;
 
 for (let i = 1; i < args.length; i++) {
   if (args[i] === "--name" && args[i + 1]) name = args[++i];
-  else if (args[i] === "--solve") doSolve = true;
-  else if (args[i] === "--assignment" && args[i + 1]) solvePath = args[++i];
+  else if (args[i] === "--assignment" && args[i + 1]) assignmentPath = args[++i];
   else if (args[i] === "--chunk" && args[i + 1]) chunkSize = parseInt(args[++i], 10);
+  else { console.error(`Unknown option: ${args[i]}`); process.exit(1); }
 }
 
 // --- Parse DIMACS --------------------------------------------------------
@@ -79,15 +77,6 @@ function verify(clauses, bools) {
     }
     if (!sat) { console.error(`ERROR: clause ${ci} not satisfied`); process.exit(1); }
   }
-}
-
-// --- Solve ---------------------------------------------------------------
-
-function solveWithMinisat(cnfPath) {
-  const out = "/tmp/_dimacs_to_lean_sol.txt";
-  try { execSync(`minisat "${cnfPath}" "${out}"`, { timeout: 300_000, stdio: "pipe" }); }
-  catch { /* minisat exits nonzero for SAT and UNSAT */ }
-  try { return readFileSync(out, "utf-8"); } catch { return null; }
 }
 
 // --- Emit Lean -----------------------------------------------------------
@@ -138,17 +127,10 @@ const litsPerClause = clauses.length ? clauses[0].length : 0;
 console.error(`${name}: ${k} vars, ${clauses.length} clauses, ${litsPerClause}-SAT`);
 
 let bools = null;
-if (solvePath) {
-  bools = parseAssignment(readFileSync(solvePath, "utf-8"), k);
+if (assignmentPath) {
+  bools = parseAssignment(readFileSync(assignmentPath, "utf-8"), k);
   if (bools) { verify(clauses, bools); console.error("Assignment verified"); }
   else console.error("No SAT assignment found");
-} else if (doSolve) {
-  const sol = solveWithMinisat(cnfPath);
-  if (sol) {
-    bools = parseAssignment(sol, k);
-    if (bools) { verify(clauses, bools); console.error("Solved and verified by minisat"); }
-    else console.error("minisat: UNSAT or INDET");
-  }
 }
 
 // Output

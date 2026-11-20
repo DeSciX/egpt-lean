@@ -219,21 +219,23 @@ Mathlib type (`ℕ`, `List`, `Vector`, `Set`, `Nat.Prime`) or is carried onto on
 and the class definitions are given in full: `P_def`/`NP_def` (SetRFL.lean), `P`/`NP` (PPNP.lean),
 `P_standard`/`NP_standard` (StandardComplexity.lean).
 
-**The proofs hold under strict bijective equivalence.** Each link between an EGPT object and its
-standard counterpart is an `Equiv`, with `left_inv` and `right_inv` proven:
+**The proofs hold under strict bijective equivalence.** Each bijection the proofs use is an
+`Equiv`, with explicit maps in both directions and proven inverses:
 `entropyNatEquivNat : EntropyNat ≃ ℕ` (EntropyNumber/Basic.lean),
 `cnfPolyEquiv : SyntacticCNF k ≃ Translation1Image k` (Isomorphisms/CNF/CNFPolynomialSystem.lean),
-`cnfEquivEntropyNat` (Isomorphisms/CNF/CNFAsEntropyNat.lean), and the number tower
-`EntropyInt ≃ ℤ`, `EntropyRat ≃ ℚ`, `EntropyReal ≃ ℝ` (EntropyNumber/). Across each `Equiv`, every
-object on one side corresponds to exactly one object on the other.
+`cnfEquivEntropyNat` (Isomorphisms/CNF/CNFAsEntropyNat.lean), and
+`entropyIntEquivInt : EntropyInt ≃ ℤ` (EntropyNumber/Int.lean). Across each `Equiv`, every object on
+one side corresponds to exactly one object on the other.
 
 **EGPT constructive number theory carries no axiom of choice on the EGPT side of the boundary.**
-The forward boundary (EGPT → Mathlib) is free of `Classical.choice`. It enters only at the reverse
-boundary, going from Mathlib's quotient-defined types back into EGPT's (selecting a Cauchy
-representative in `entropyRealEquivReal`, EntropyNumber/Real.lean), and in the two Chain 3
-membership lemmas above. No capstone depends on any of these: a theorem's `#print axioms` closure
-contains every axiom of every constant it depends on, and the capstones' closure is
-`{propext, Quot.sound}`.
+The bijections the proofs use (`entropyNatEquivNat`, `cnfPolyEquiv`, `cnfEquivEntropyNat`,
+`entropyIntEquivInt`) are free of `Classical.choice` in both directions: their `#print axioms`
+closure is `{propext}` or `{propext, Quot.sound}`. No capstone depends on a constant that uses
+`Classical.choice`: a theorem's `#print axioms` closure contains every axiom of every constant it
+depends on, and the capstones' closure is `{propext, Quot.sound}`. `Classical.choice` does appear
+in the library outside that closure, for example in the two Chain 3 membership lemmas above and
+where EGPT numbers meet Mathlib's `ℚ` and `ℝ` (`EntropyRat.toRat`; `entropyRealEquivReal`, which
+is chosen from a cardinality equality).
 
 The debate record closed at Exchange 34 on the same claim (`consensus:C42`): P = NP is settled
 without qualification by the sorry-free proof chain.

@@ -1078,7 +1078,7 @@ For the curious reader who wants to verify each claim:
 To reproduce the axiom audit:
 
 ```bash
-cd ~/Code/EGPT-research/Lean/EGPT
+cd "$EGPT_LEAN"   # the Lean project root
 lake build InformationTheory.EntropyNumber.ContinuumHypothesis
 lake env lean AxiomProbe.lean   # prints axiom closures for every key theorem
 ```
@@ -1087,11 +1087,11 @@ To reproduce the extraction prototype:
 
 ```bash
 # 1. Runtime (one time)
-cd ~/Code/Unkamon/FRAQTL/fat
+cd "$EGPT_NUM"   # the engine's integer number crate
 cargo build --release -p egpt_num
 
 # 2. Run the extractor
-cd ~/Code/EGPT-research/Lean/EGPT
+cd "$EGPT_LEAN"   # the Lean project root
 lake env lean extraction/ExtractionCommand.lean
 
 # 3. Build + verify all twelve targets byte-equivalent

@@ -6,7 +6,7 @@ table extracts classical Mathlib theorems to bit-exact C without
 rewriting the theorems.**
 
 Nine theorems, twelve-realizer walker, one `#extract_to_c` command.
-All emitted C programs compile against [`libegpt_num`](../../../../Unkamon/FRAQTL/fat/crates/egpt_num/),
+All emitted C programs compile against `libegpt_num`, built from the engine's integer number crate,
 run to `true`, exit 0, and pass `make diff` byte-equivalence.
 
 ---
@@ -56,11 +56,11 @@ Eight have axiom closure `{propext, Classical.choice, Quot.sound}`.
 
 ```bash
 # 1. Runtime (FRAQTL; one time):
-cd ~/Code/Unkamon/FRAQTL/fat
+cd "$EGPT_NUM"   # the engine's integer number crate
 cargo build --release -p egpt_num
 
 # 2. Extraction library build (cached oleans if available):
-cd ~/Code/EGPT-research/Lean/EGPT
+cd "$EGPT_LEAN"   # the Lean project root
 lake exe cache get
 lake build InformationTheory.EntropyNumber.ContinuumHypothesis
 
@@ -79,7 +79,7 @@ make diff
 
 | Repo | Branch | Purpose |
 |---|---|---|
-| `EGPT-research` | `feat/extraction-prototype` | Lean-side walker + target theorems + docs |
+| the research repository | `feat/extraction-prototype` | Lean-side walker + target theorems + docs |
 | `FRAQTL` | `feat/egpt-num-cffi` | `egpt_num` C ABI runtime (cdylib + header) |
 
 Commit history on `feat/extraction-prototype`:

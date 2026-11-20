@@ -219,7 +219,7 @@ Mathlib type (`ℕ`, `List`, `Vector`, `Set`, `Nat.Prime`) or is carried onto on
 and the class definitions are given in full: `P_def`/`NP_def` (SetRFL.lean), `P`/`NP` (PPNP.lean),
 `P_standard`/`NP_standard` (StandardComplexity.lean).
 
-**The proofs hold under strict bijective equivalence.** Each bijection the proofs use is an
+**The proofs hold under strict bijective equivalence.** Each bijection named here is an
 `Equiv`, with explicit maps in both directions and proven inverses:
 `entropyNatEquivNat : EntropyNat ≃ ℕ` (EntropyNumber/Basic.lean),
 `cnfPolyEquiv : SyntacticCNF k ≃ Translation1Image k` (Isomorphisms/CNF/CNFPolynomialSystem.lean),
@@ -228,9 +228,9 @@ and the class definitions are given in full: `P_def`/`NP_def` (SetRFL.lean), `P`
 one side corresponds to exactly one object on the other.
 
 **EGPT constructive number theory carries no axiom of choice on the EGPT side of the boundary.**
-The bijections the proofs use (`entropyNatEquivNat`, `cnfPolyEquiv`, `cnfEquivEntropyNat`,
-`entropyIntEquivInt`) are free of `Classical.choice` in both directions: their `#print axioms`
-closure is `{propext}` or `{propext, Quot.sound}`. No capstone depends on a constant that uses
+Each bijection named here (`entropyNatEquivNat`, `cnfPolyEquiv`, `cnfEquivEntropyNat`,
+`entropyIntEquivInt`) is choice-free in both directions: its `#print axioms` closure is
+`{propext}` or `{propext, Quot.sound}`. All three capstones depend on `entropyNatEquivNat`. No capstone depends on a constant that uses
 `Classical.choice`: a theorem's `#print axioms` closure contains every axiom of every constant it
 depends on, and the capstones' closure is `{propext, Quot.sound}`. `Classical.choice` does appear
 in the library outside that closure, for example in the two Chain 3 membership lemmas above and

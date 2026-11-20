@@ -123,9 +123,9 @@ purely constructive.
 
 ## 4. The runtime — `egpt_num` C ABI
 
-Lives in [FRAQTL `feat/egpt-num-cffi`](../../../../Unkamon/FRAQTL/fat/crates/egpt_num/)
+Lives in the engine's integer number crate, on FRAQTL `feat/egpt-num-cffi`
 (commit `f4ba38b`). The C-emitted code includes
-[`egpt_num.h`](../../../../Unkamon/FRAQTL/fat/crates/egpt_num/include/egpt_num.h)
+`egpt_num.h`
 and links against `libegpt_num.dylib`.
 
 ### 4.1 ABI surface
@@ -215,7 +215,7 @@ sound.
 
 ## 6. Where each commit lives
 
-| Pass | EGPT-research commit | FRAQTL commit | Gain |
+| Pass | Research-repository commit | FRAQTL commit | Gain |
 |---|---|---|---|
 | 0 | — | `f4ba38b` | runtime |
 | A | `54165e2` | — | template walker (retired) |

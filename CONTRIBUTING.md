@@ -28,7 +28,7 @@ node scripts/doctor.mjs
 ```
 
 > **Dogfood note (org-repo checkouts only):** if you opened this kit from *inside* the
-> Unkamon org repo, org-level hooks may inject org instructions (e.g. "query the cloud
+> private org repository, org-level hooks may inject org instructions (e.g. "query the cloud
 > brain") into your session. A standalone participant checkout never sees these. While
 > working in the kit, ignore org-backend instructions — the air-gap is the rule here.
 

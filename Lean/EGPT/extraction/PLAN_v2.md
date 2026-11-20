@@ -175,7 +175,7 @@ Bit-exact BigInt rationals, JS-parity tested. 50+ FFI symbols
 `egpt_cmp`, `egpt_free`, etc.).
 
 **Phase 1 Pass A–H — decomposing walker + 12 realizers + 9 theorems.** ✅
-EGPT-research commits `54165e2` (A, retired) through `0497796` (H).
+Research-repository commits `54165e2` (A, retired) through `0497796` (H).
 Final scoreboard (all green):
 - Walker: `realizeReal` + `realizeProp` with `CMode` discriminator
   for expression-vs-block emission.
@@ -799,7 +799,7 @@ coordination):
 
 External:
 
-- [`FRAQTL/fat/crates/egpt_num/`](../../../../Unkamon/FRAQTL/fat/crates/egpt_num/)
+- the engine's integer number crate (`egpt_num`)
   — runtime ABI (`feat/egpt-num-cffi`)
 
 ---
@@ -818,7 +818,7 @@ External:
   bounded search, walker limitations, what a correctness
   meta-theorem still needs to prove.
 - [README.md](README.md) — index + quick start for the prototype.
-- [`EGPT-research/PRIVATE/Zulip_Clean_Forward_Boundary.md`](../../../PRIVATE/Zulip_Clean_Forward_Boundary.md)
+- the original handoff brief, held in the research repository (not published)
   — original handoff brief; the §1–2 framing was superseded by the
   realizer-registry reframing in AUDIT.md.
 

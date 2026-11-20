@@ -2,9 +2,9 @@
 
 **Date opened:** 2026-04-24
 **Status:** Steps 1–4 of handoff Investigation Order complete. Phase 0 (runtime-first prototype) starting.
-**Author:** Claude Code (session-opened under `/Users/essam/Code/Unkamon/FRAQTL`)
+**Author:** Claude Code (session-opened under `FRAQTL`)
 
-This document is the authoritative cold-start brief. A future agent picking up this work should read this file, then [PLAN.md](PLAN.md), then the handoff at [`EGPT-research/PRIVATE/Zulip_Clean_Forward_Boundary.md`](../../../PRIVATE/Zulip_Clean_Forward_Boundary.md) §"Agent Handoff" for original framing.
+This document is the authoritative cold-start brief. A future agent picking up this work should read this file, then [PLAN.md](PLAN.md), then the handoff brief held in the research repository (not published) §"Agent Handoff" for original framing.
 
 ---
 
@@ -29,13 +29,13 @@ A **realizer registry** — Coq's `Extract Constant` pattern. Coverage = what we
 
 | Item | Value |
 |---|---|
-| Repo (Lean extraction deliverables) | [`EGPT-research/Lean/EGPT/`](..) — Lake project `egpt-pr` |
-| Repo (FFI runtime deliverables) | [`FRAQTL/fat/crates/egpt_num/`](../../../../../Unkamon/FRAQTL/fat/crates/egpt_num/) |
-| Mathlib fork | [`~/Lean/mathlib4`](../../../../../../Lean/mathlib4) @ `feat/information-theory` |
+| Repo (Lean extraction deliverables) | [the Lean project root](..) — Lake project `egpt-pr` |
+| Repo (FFI runtime deliverables) | the engine's integer number crate (`egpt_num`) |
+| Mathlib fork | a local Mathlib clone @ `feat/information-theory` |
 | Lean toolchain | `leanprover/lean4:v4.29.0` |
 | Lake dependency | `require mathlib from "../../../../Lean/mathlib4"` (path) |
-| Starting branch in EGPT-research | `refactor/ppf-canonical-expansion-EGPT-research` (had uncommitted work — do not commit extraction deliverables here) |
-| New branch for Lean work | `feat/extraction-prototype` in EGPT-research |
+| Starting branch in the research repository | a refactor branch (had uncommitted work — do not commit extraction deliverables here) |
+| New branch for Lean work | `feat/extraction-prototype` in the research repository |
 | New branch for FFI work | `feat/egpt-num-cffi` in FRAQTL |
 | Build health | `lake build InformationTheory.EntropyNumber.ContinuumHypothesis` green after `lake exe cache get` |
 
@@ -119,7 +119,7 @@ Via `Rat.mkRat` / `Rat.divInt` lemmas. Rat realizer path needs to either side-st
 
 ## 4. Runtime substrate inventory (Phase 0 target)
 
-### 4.1 `egpt_num` Rust crate ([FRAQTL/fat/crates/egpt_num/](../../../../../Unkamon/FRAQTL/fat/crates/egpt_num/))
+### 4.1 `egpt_num` Rust crate (the engine's integer number crate)
 
 - `EgptNumber`: exact rational `{num: BigInt, den: BigInt}`, reduced canonical form, sign in numerator, positive denominator, coprime.
 - Arithmetic: `add`, `sub`, `mul`, `div`, `neg`, `compare` (total order via cross-multiply) — all bit-exact via `num-bigint`.
@@ -127,7 +127,7 @@ Via `Rat.mkRat` / `Rat.divInt` lemmas. Rat realizer path needs to either side-st
 - JS-parity tested bit-for-bit against `EGPTNumber` JS via `tests/js_parity.rs` fixture.
 - **No FFI yet** — no `extern "C"`, no `cbindgen` config.
 
-### 4.2 JS reference for transcendentals ([EGPTMath/js/model/core/EGPTranscendental.js](../../../../../Unkamon/FRAQTL/egpt/EGPTMath/js/model/core/EGPTranscendental.js))
+### 4.2 JS reference for transcendentals (`EGPTranscendental.js`, in the engine's JS math library)
 
 `cos`, `sin`, `exp`, `log2`, `exp2`, `factorial`. 157/157 tests green. Reference implementation for future Rust ports when realizers grow beyond the prototype.
 
@@ -156,7 +156,7 @@ Recorded here so a cold-start agent does not re-litigate them.
 | D3 | C runtime = roll our own on top of `egpt_num` | Bit-exact, BigInt-backed, JS-parity-tested. No iRRAM/MPFR dependency. |
 | D4 | FFI lives in public FRAQTL `egpt_num` crate | Additive `#[no_mangle]` shim; no private math logic exposed. |
 | D5 | Branch for FFI work = `feat/egpt-num-cffi` in FRAQTL | Independent from Lean extraction branch so C-ABI can ship separately. |
-| D6 | Branch for Lean extraction = `feat/extraction-prototype` in EGPT-research | Keeps Lean-side deliverables private per user instruction. |
+| D6 | Branch for Lean extraction = `feat/extraction-prototype` in the research repository | Keeps Lean-side deliverables private per user instruction. |
 | D7 | Phase 0 first (runtime alone, ~1–2 hrs), Phase 1 second (Lean meta-program) | Prove runtime half standalone before wiring extraction on top. |
 | D8 | Cloud KB not required for this session's work | FFI is additive; user waived C. |
 | D9 | `evaluate_binary_sequence` docstring is known overstated — do not fix this session | Note in ARCHITECTURE.md when written. |
@@ -185,10 +185,10 @@ Surface before any architectural next step:
 
 ## 8. Pointers for a cold-start agent
 
-- Handoff brief: [`EGPT-research/PRIVATE/Zulip_Clean_Forward_Boundary.md`](../../../PRIVATE/Zulip_Clean_Forward_Boundary.md) — original framing; read §"Agent Handoff" onward. Note that §1–2 framing is superseded by this AUDIT under the realizer-registry reframing.
+- Handoff brief: held in the research repository (not published) — original framing; read §"Agent Handoff" onward. Note that §1–2 framing is superseded by this AUDIT under the realizer-registry reframing.
 - Tower entry point: [`InformationTheory/EntropyNumber/Basic.lean`](../InformationTheory/EntropyNumber/Basic.lean).
 - Beth-collapse scope boundary: [`ContinuumHypothesis.lean:218–244`](../InformationTheory/EntropyNumber/ContinuumHypothesis.lean#L218) (`TypeTheoryConstructible` inductive). Do not assume it covers an arbitrary Mathlib type.
-- Runtime entry point: [`fat/crates/egpt_num/src/lib.rs`](../../../../../Unkamon/FRAQTL/fat/crates/egpt_num/src/lib.rs).
-- JS reference for transcendentals: [`EGPTranscendental.js`](../../../../../Unkamon/FRAQTL/egpt/EGPTMath/js/model/core/EGPTranscendental.js).
+- Runtime entry point: `src/lib.rs` of the engine's integer number crate.
+- JS reference for transcendentals: `EGPTranscendental.js`, in the engine's JS math library.
 - To reproduce the axiom report: from `Lean/EGPT/`, run `lake build InformationTheory.EntropyNumber.ContinuumHypothesis && lake env lean AxiomProbe.lean`.
-- To cold-start without replaying this session: read AUDIT.md → PLAN.md → open the relevant branch (`feat/extraction-prototype` in EGPT-research for Lean work, `feat/egpt-num-cffi` in FRAQTL for FFI work).
+- To cold-start without replaying this session: read AUDIT.md → PLAN.md → open the relevant branch (`feat/extraction-prototype` in the research repository for Lean work, `feat/egpt-num-cffi` in FRAQTL for FFI work).

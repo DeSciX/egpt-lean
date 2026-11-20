@@ -13,7 +13,7 @@
 set -euo pipefail
 
 SRC="$(cd "$(dirname "$0")" && pwd)/InformationTheory"
-DST="$HOME/Lean/mathlib4/Mathlib/InformationTheory"
+DST="${MATHLIB_FORK:?set MATHLIB_FORK to the local Mathlib fork checkout}/Mathlib/InformationTheory"
 
 if [ ! -d "$SRC" ]; then
   echo "ERROR: Source not found: $SRC"
@@ -66,4 +66,4 @@ for sub in $SUBSYSTEMS; do
 done
 
 echo ""
-echo "=== Done. Verify with: cd ~/Lean/mathlib4 && lake build Mathlib.InformationTheory ==="
+echo "=== Done. Verify with: cd $MATHLIB_FORK && lake build Mathlib.InformationTheory ==="

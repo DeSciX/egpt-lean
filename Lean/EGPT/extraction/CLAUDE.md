@@ -432,7 +432,7 @@ Classical.choice is **never** used to:
 ### Reproducing the audit
 
 ```bash
-cd ~/Code/EGPT-research/Lean/EGPT
+cd "$EGPT_LEAN"   # the Lean project root
 lake build InformationTheory.EntropyNumber.ContinuumHypothesis
 lake env lean AxiomProbe.lean   # axiom closure for every key theorem
 ```
@@ -754,7 +754,7 @@ Critical debate insights (cite by ID when needed):
 
 ```bash
 # Build the proof chain
-cd ~/Code/EGPT-research/Lean/EGPT
+cd "$EGPT_LEAN"   # the Lean project root
 lake exe cache get
 lake build InformationTheory.EntropyNumber.ContinuumHypothesis
 

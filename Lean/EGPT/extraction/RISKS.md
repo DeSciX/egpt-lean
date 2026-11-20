@@ -215,7 +215,7 @@ These are honest design choices for the prototype and don't become
   representation (we have that — `egpt_num`) plus type-specific
   comparison conventions. Easy to add; deferred.
 - **No upstreaming to Mathlib.** Extraction is a fork-level
-  experiment; the walker lives in `EGPT-research/Lean/EGPT/`, not in
+  experiment; the walker lives in the Lean project of the research repository, not in
   the main Mathlib tree.
 - **No LCNF fork.** Option B in the Zulip handoff. We stayed with
   Option A (post-elaboration Expr rewriting) for the prototype.

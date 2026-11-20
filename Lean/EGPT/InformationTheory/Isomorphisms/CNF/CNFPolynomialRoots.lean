@@ -396,7 +396,7 @@ theorem allRoots_equiv_satisfyingAssignments {k : ℕ}
        ↔ evalCNF cnf a = true) :=
   ⟨rfl, ndmEntropyWalk_determines_sat cnf a h_clauses_nonempty⟩
 
-/-- **Polynomial equation root solving IS SAT solving.**
+/-- **Polynomial equation root solving IS deciding satisfiability.**
 
 This theorem is a structural identity between two operations from
 standard mathematics:
@@ -409,12 +409,12 @@ standard mathematics:
   - deciding satisfiability of a Boolean CNF (`SyntacticCNF k`).
 
 The statement is unconditional. There is no antecedent assuming
-the existence of a SAT-deciding algorithm, no "given an algorithm
+the existence of a deciding algorithm, no "given an algorithm
 for X, you can build one for Y", no scoping clause restricting the
 result to the EGPT/InformationTheory formalization. The formalization
 is the bridge through which the bijection is exhibited, not a
 restriction on what the bijection says. Standard solving of polynomial
-equations is bijectively solving SAT problems — full stop. -/
+equations is bijectively deciding satisfiability of CNFs — full stop. -/
 theorem polynomial_root_solving_is_sat_solving {k : ℕ}
     (cnf : SyntacticCNF k) (a : Vector Bool k)
     (h_clauses_nonempty : ∀ c ∈ cnf, c ≠ []) :

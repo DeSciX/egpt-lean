@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-SRC="$HOME/Lean/mathlib4/Mathlib/InformationTheory"
+SRC="${MATHLIB_FORK:?set MATHLIB_FORK to the local Mathlib fork checkout}/Mathlib/InformationTheory"
 DST="$(cd "$(dirname "$0")" && pwd)/InformationTheory"
 
 if [ ! -d "$SRC" ]; then

@@ -11,17 +11,17 @@ https://github.com/eabadir/mathlib4/tree/feat/information-theory/Mathlib/Informa
 | Fork | https://github.com/eabadir/mathlib4.git |
 | Branch | `feat/information-theory` |
 | Upstream | https://github.com/leanprover-community/mathlib4.git |
-| Local path | `~/Lean/mathlib4/` |
+| Local path | `$MATHLIB_FORK` (the local Mathlib fork checkout) |
 | Target namespace | `Mathlib.InformationTheory` |
 
 ## Sync Scripts
 
 | Script | Direction | What it does |
 |--------|-----------|-------------|
-| `sync_to_mathlib.sh` | `Lean/EGPT/InformationTheory/` → `~/Lean/mathlib4/Mathlib/InformationTheory/` | Copies .lean files, rewrites imports (`InformationTheory.` → `Mathlib.InformationTheory.`), strips LLM guidance headers |
-| `sync_from_mathlib.sh` | `~/Lean/mathlib4/Mathlib/InformationTheory/` → `Lean/EGPT/InformationTheory/` | Reverse sync, rewrites imports back |
+| `sync_to_mathlib.sh` | `Lean/EGPT/InformationTheory/` → `$MATHLIB_FORK/Mathlib/InformationTheory/` | Copies .lean files, rewrites imports (`InformationTheory.` → `Mathlib.InformationTheory.`), strips LLM guidance headers |
+| `sync_from_mathlib.sh` | `$MATHLIB_FORK/Mathlib/InformationTheory/` → `Lean/EGPT/InformationTheory/` | Reverse sync, rewrites imports back |
 
-## Git Remotes (in `~/Lean/mathlib4/`)
+## Git Remotes (in `$MATHLIB_FORK`)
 
 ```
 fork    https://github.com/eabadir/mathlib4.git (fetch/push)
@@ -35,7 +35,7 @@ origin  https://github.com/leanprover-community/mathlib4.git (fetch/push)
 # 2. Sync to fork
 cd Lean/EGPT && bash sync_to_mathlib.sh
 # 3. Commit and push
-cd ~/Lean/mathlib4 && git add Mathlib/InformationTheory/ && git commit && git push fork feat/information-theory
+cd "$MATHLIB_FORK" && git add Mathlib/InformationTheory/ && git commit && git push fork feat/information-theory
 ```
 
 ## PR Description
